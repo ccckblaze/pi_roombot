@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/pi/Documents/ROS Projects/pi_roombot/install/setup.sh
