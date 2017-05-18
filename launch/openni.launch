@@ -1,0 +1,46 @@
+<launch>
+
+<!-- Camera -->
+<include file="$(find openni_launch)/launch/openni.launch">
+    <arg name="depth_registration" value="True" />
+</include>
+
+<param name="/camera/driver/data_skip" value="20" />
+
+  <group ns="rtabmap">
+   
+    <node pkg="rtabmap_ros" type="rgbd_odometry" name="rgbd_odometry" output="screen">
+        <remap from="rgb/image"       to="/camera/rgb/image_rect_color"/>
+        <remap from="depth/image"     to="/camera/depth_registered/image_raw"/>
+        <remap from="rgb/camera_info" to="/camera/depth_registered/camera_info"/>
+        <param name="frame_id" type="string" value="base_link"/>
+        <param name="wait_for_transform_duration" type="double" value="2"/>
+    </node>
+
+    <node name="rtabmap" pkg="rtabmap_ros" type="rtabmap" output="screen" args="">
+        <param name="frame_id" type="string" value="base_link"/>
+        <param name="subscribe_depth" type="bool" value="true"/>
+
+        <remap from="odom" to="odom"/>
+        <remap from="rgb/image"       to="/camera/rgb/image_rect_color"/>
+        <remap from="depth/image"     to="/camera/depth_registered/image_raw"/>
+        <remap from="rgb/camera_info" to="/camera/rgb/camera_info"/>
+
+
+        <param name="wait_for_transform_duration" type="double" value="2"/>
+        <param name="OdomF2M/MaxSize" value="1000"/>
+        <param name="Odom/ImageDecimation" value="20"/>
+        <param name="Mem/ImagePreDecimation" value="20"/>
+        <param name="Mem/ImagePostDecimation" value="20"/>
+        <param name="Vis/MaxFeatures" value="500"/>
+        <!-- param name="Vis/FeatureType" value="0"/-->
+        <param name="Kp/DetectorStrategy" value="0"/>
+    </node>
+
+    <node pkg="tf" type="static_transform_publisher" name="base_to_camera"
+args="0 0 0 0 0 0 /base_link /camera_link 100"/>
+   
+  </group>
+
+</launch>
+

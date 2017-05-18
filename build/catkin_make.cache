@@ -1,2 +1,0 @@
-
--DCATKIN_DEVEL_PREFIX=/home/pi/Documents/ROS Projects/pi_roombot/devel -DCMAKE_INSTALL_PREFIX=/home/pi/Documents/ROS Projects/pi_roombot/install -G Unix Makefiles
