@@ -6,7 +6,7 @@
   </node>
   <node pkg="rosserial_python" type="serial_node.py" name="arduino_base_controller" output="screen" respawn="true">
     <param name="~port" value="/dev/ttyUSB0" />
-    <param name="~baud" value="115200" />
+    <param name="~baud" value="9600" />
   </node> 
 
 </launch>

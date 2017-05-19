@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package>
-  <name>roombot</name>
+  <name>pi_roombot</name>
   <version>0.0.0</version>
   <description>The roombot package</description>
 
