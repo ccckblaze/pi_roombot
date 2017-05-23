@@ -4,7 +4,7 @@ This is a ROS based SLAM robot project comes out with a very low price, and it w
 
 ## Components
 1. Raspberry Pi or other ARM or x86 based computer.
-2. Arduino UNO R3(recommended, used for wheel and IMU controll, you can do it the harder way which recoding to suit just using the Raspberry Pi)
+2. Arduino Mega(recommended, used for wheel and IMU controll, you can do it the harder way which recoding to suit just using the Raspberry Pi)
 3. Motor Driver: PololuMC33926 or DFRobotL298PShield(other L298N component should works too) 
 4. IMU: Sparkfun SEN-10724/Generic GY-85/Generic GY-80
 5. Lidar: XV-11/rplidar etc.
@@ -23,4 +23,4 @@ This is a ROS based SLAM robot project comes out with a very low price, and it w
 
 ## Trouble Shooting
 1. rosserial lose sync: #define USE_USBCON before include ros.h 
-2. rosserial still got problem with sync: try use hydro-devel instead of indigo-devel
+2. rosserial still got problem with sync: try use jade-devel instead of indigo-devel
