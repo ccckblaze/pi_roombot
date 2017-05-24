@@ -23,5 +23,5 @@ This is a ROS based SLAM robot project comes out with a very low price(less than
 
 ## Trouble Shooting
 1. rosserial lose sync: #define USE_USBCON before include ros.h 
-2. rosserial only works at the first launch or first reset on arduino: maybe the sdram not enough for the buffering, make sure you are using Mega version arduino instead of Uno or something else.
+2. rosserial only works at the first launch or first reset on arduino: maybe the sram not enough for the buffering, make sure you are using Mega version arduino instead of Uno or something else.
 3. rosserial still got problem with sync: replace "ros::nodeHandle" inside the ino file with "ros::nodeHandle_<ArduinoHardware, 6, 6, 150, 150>" to lower the buffer size, or just try use the jade-devel branch instead of indigo-devel

@@ -34,6 +34,8 @@
 #include <ros_arduino_base/UpdateGains.h>
 #include <ros_arduino_msgs/Encoders.h>
 #include <ros_arduino_msgs/CmdDiffVel.h>
+#include <ros_arduino_msgs/RawImu.h>
+#include <geometry_msgs/Vector3.h>
 
 /********************************************************************************************
 /                                                     USER CONFIG                           *
@@ -116,6 +118,22 @@ uint32_t last_cmd_time;       // [milliseconds]
 uint32_t last_control_time;   // [milliseconds]
 uint32_t last_status_time;    // [milliseconds]
 
+// IMU
+#if defined(WIRE_T3)
+  #include <i2c_t3.h>
+#else
+  #include <Wire.h>
+#endif
+
+#include "imu_configuration.h"
+
+uint32_t last_time = 0;
+uint8_t update_rate = 50; //Hz
+
+bool is_first = true;
+
+ros_arduino_msgs::RawImu raw_imu_msg;
+ros::Publisher raw_imu_pub("raw_imu", &raw_imu_msg);
 
 // ROS node
 ros::NodeHandle nh;
@@ -149,6 +167,7 @@ void setup()
   nh.advertise(pub_encoders);
   nh.subscribe(sub_diff_vel);
   nh.advertiseService(update_gains_server);
+  nh.advertise(raw_imu_pub);
   
   // Wait for ROSserial to connect
   while (!nh.connected()) 
@@ -213,11 +232,19 @@ void setup()
   
   // Initialize the motors
   setupMotors();
+
+  // Start Wire
+  #if defined(WIRE_T3)
+    Wire.begin(I2C_MASTER, 0x00, I2C_PINS_18_19, I2C_PULLUP_INT, I2C_RATE_400);
+  #else
+    Wire.begin();
+  #endif
 } 
 
 
 void loop() 
 {
+  // For motors
   if ((millis() - last_encoders_time) >= (1000 / encoder_rate[0]))
   { 
     encoders_msg.left = left_encoder.read();
@@ -238,6 +265,57 @@ void loop()
     left_motor_controller.desired_velocity = 0.0;
     right_motor_controller.desired_velocity = 0.0;
   }
+  // For IMU
+  if (is_first)
+    { 
+      raw_imu_msg.accelerometer = check_accelerometer();
+      raw_imu_msg.gyroscope = check_gyroscope();
+      raw_imu_msg.magnetometer = check_magnetometer();
+      
+      if (!raw_imu_msg.accelerometer)
+      {
+        nh.logerror("Accelerometer NOT FOUND!");
+      }
+      
+      if (!raw_imu_msg.gyroscope)
+      {
+        nh.logerror("Gyroscope NOT FOUND!");
+      }
+      
+      if (!raw_imu_msg.magnetometer)
+      {
+        nh.logerror("Magnetometer NOT FOUND!");
+      }
+      
+      is_first = false;
+    }
+    else if (millis() - last_time >= 1000/update_rate)
+    {
+      raw_imu_msg.header.stamp = nh.now();
+      raw_imu_msg.header.frame_id = "imu_link";
+      if (raw_imu_msg.accelerometer)
+      {
+        measure_acceleration();
+        raw_imu_msg.raw_linear_acceleration = raw_acceleration;
+      }
+      
+      if (raw_imu_msg.gyroscope)
+      {
+        measure_gyroscope();
+        raw_imu_msg.raw_angular_velocity = raw_rotation;
+      }
+      
+      if (raw_imu_msg.magnetometer)
+      {
+        measure_magnetometer();
+        raw_imu_msg.raw_magnetic_field = raw_magnetic_field;
+      }
+
+      raw_imu_pub.publish(&raw_imu_msg);
+
+      last_time = millis();
+    }
+
   nh.spinOnce();
 }
 
