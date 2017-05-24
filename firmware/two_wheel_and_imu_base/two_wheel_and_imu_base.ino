@@ -70,6 +70,15 @@
 
 #include "motor_driver_config.h"
 
+// IMU
+#if defined(WIRE_T3)
+  #include <i2c_t3.h>
+#else
+  #include <Wire.h>
+#endif
+
+#include "imu_configuration.h"
+
 typedef struct {
   float desired_velocity;     // [m/s]
   uint32_t current_time;      // [milliseconds]
@@ -109,31 +118,19 @@ void Control();
 
 int control_rate[1];   // [Hz]
 int encoder_rate[1];   // [Hz]
+int imu_rate[1];       // [Hz]
 int no_cmd_timeout[1]; // [seconds]
 
+bool is_first = true;
 
 uint32_t up_time;             // [milliseconds]
 uint32_t last_encoders_time;  // [milliseconds]
 uint32_t last_cmd_time;       // [milliseconds]
 uint32_t last_control_time;   // [milliseconds]
+uint32_t last_imu_time;       // [milliseconds]
 uint32_t last_status_time;    // [milliseconds]
 
-// IMU
-#if defined(WIRE_T3)
-  #include <i2c_t3.h>
-#else
-  #include <Wire.h>
-#endif
-
-#include "imu_configuration.h"
-
-uint32_t last_time = 0;
-uint8_t update_rate = 50; //Hz
-
-bool is_first = true;
-
-ros_arduino_msgs::RawImu raw_imu_msg;
-ros::Publisher raw_imu_pub("raw_imu", &raw_imu_msg);
+char frame_id[] = "base_link";
 
 // ROS node
 ros::NodeHandle nh;
@@ -146,15 +143,17 @@ ros::Subscriber<ros_arduino_msgs::CmdDiffVel> sub_diff_vel("cmd_diff_vel", cmdDi
 
 // ROS services prototype
 void updateGainsCb(const ros_arduino_base::UpdateGains::Request &req, ros_arduino_base::UpdateGains::Response &res);
+
 // ROS services
 ros::ServiceServer<ros_arduino_base::UpdateGains::Request, ros_arduino_base::UpdateGains::Response> update_gains_server("update_gains", &updateGainsCb);
 
 // ROS publishers msgs
 ros_arduino_msgs::Encoders encoders_msg;
-char frame_id[] = "base_link";
+ros_arduino_msgs::RawImu raw_imu_msg;
+
 // ROS publishers
 ros::Publisher pub_encoders("encoders", &encoders_msg);
-
+ros::Publisher raw_imu_pub("raw_imu", &raw_imu_msg);
 
 void setup() 
 { 
@@ -183,6 +182,10 @@ void setup()
   if (!nh.getParam("encoder_rate", encoder_rate,1))
   {
     encoder_rate[0] = 50;
+  }
+  if (!nh.getParam("imu_rate", imu_rate,1))
+  {
+    imu_rate[0] = 50;
   }
   if (!nh.getParam("no_cmd_timeout", no_cmd_timeout,1))
   {
@@ -267,54 +270,54 @@ void loop()
   }
   // For IMU
   if (is_first)
-    { 
-      raw_imu_msg.accelerometer = check_accelerometer();
-      raw_imu_msg.gyroscope = check_gyroscope();
-      raw_imu_msg.magnetometer = check_magnetometer();
+  { 
+    raw_imu_msg.accelerometer = check_accelerometer();
+    raw_imu_msg.gyroscope = check_gyroscope();
+    raw_imu_msg.magnetometer = check_magnetometer();
       
-      if (!raw_imu_msg.accelerometer)
-      {
-        nh.logerror("Accelerometer NOT FOUND!");
-      }
-      
-      if (!raw_imu_msg.gyroscope)
-      {
-        nh.logerror("Gyroscope NOT FOUND!");
-      }
-      
-      if (!raw_imu_msg.magnetometer)
-      {
-        nh.logerror("Magnetometer NOT FOUND!");
-      }
-      
-      is_first = false;
-    }
-    else if (millis() - last_time >= 1000/update_rate)
+    if (!raw_imu_msg.accelerometer)
     {
-      raw_imu_msg.header.stamp = nh.now();
-      raw_imu_msg.header.frame_id = "imu_link";
-      if (raw_imu_msg.accelerometer)
-      {
-        measure_acceleration();
-        raw_imu_msg.raw_linear_acceleration = raw_acceleration;
-      }
-      
-      if (raw_imu_msg.gyroscope)
-      {
-        measure_gyroscope();
-        raw_imu_msg.raw_angular_velocity = raw_rotation;
-      }
-      
-      if (raw_imu_msg.magnetometer)
-      {
-        measure_magnetometer();
-        raw_imu_msg.raw_magnetic_field = raw_magnetic_field;
-      }
-
-      raw_imu_pub.publish(&raw_imu_msg);
-
-      last_time = millis();
+      nh.logerror("Accelerometer NOT FOUND!");
     }
+      
+    if (!raw_imu_msg.gyroscope)
+    {
+      nh.logerror("Gyroscope NOT FOUND!");
+    }
+      
+    if (!raw_imu_msg.magnetometer)
+    {
+      nh.logerror("Magnetometer NOT FOUND!");
+    }
+      
+    is_first = false;
+  }
+  else if (millis() - last_imu_time >= 1000 / imu_rate[0])
+  {
+    raw_imu_msg.header.stamp = nh.now();
+    raw_imu_msg.header.frame_id = "imu_link";
+    if (raw_imu_msg.accelerometer)
+    {
+      measure_acceleration();
+      raw_imu_msg.raw_linear_acceleration = raw_acceleration;
+    }
+
+    if (raw_imu_msg.gyroscope)
+    {
+      measure_gyroscope();
+      raw_imu_msg.raw_angular_velocity = raw_rotation;
+    }
+      
+    if (raw_imu_msg.magnetometer)
+    {
+      measure_magnetometer();
+      raw_imu_msg.raw_magnetic_field = raw_magnetic_field;
+    }
+
+    raw_imu_pub.publish(&raw_imu_msg);
+
+    last_imu_time = millis();
+  }
 
   nh.spinOnce();
 }
