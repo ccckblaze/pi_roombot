@@ -14,14 +14,18 @@ This is a ROS based SLAM robot project comes out with a very low price(less than
 ## Software Requirement
 1. Ubuntu Mate 16.04.2 LTS(Raspbian shold work too, if someone test under this env plz let me know)
 2. ROS Indigo(For PI, this may need to compile from the source code)
-3. ROS Packages: rosserial, ros_arduino, freenect_stack(or openni_camera, openni_launch), rtabmap, rtabmap_ros
+3. ROS Packages: navigation, rosserial, ros_arduino, freenect_stack(or openni_camera, openni_launch), rtabmap, rtabmap_ros
 
-## Installation (incomplete)
-1. just solve the deps
-2. catkin_make
-3. ready to go
+## Installation
+1. Install ROS From Tutoral, For Pi: http://wiki.ros.org/indigo/Installation/UbuntuARM, if this not working try build from source following: http://wiki.ros.org/indigo/Installation/Source
+2. Install ROS Packages listed from software requirement. (if your ROS is build from source, then try build these package from source code also, just clone them inside your workspace following the steps below, then it will build when call the catkin_make)
+3. Create your own catkin workspace following: http://wiki.ros.org/cn/ROS/Tutorials/InstallingandConfiguringROSEnvironment
+4. Clone the source code in side the src folder.
+5. Just cd to your catkin workspace folder, run "catkin_make" or "catkin_make_isolated".
+6. ready to go
 
 ## Trouble Shooting
 1. rosserial lose sync: #define USE_USBCON before include ros.h 
 2. rosserial only works at the first launch or first reset on arduino: maybe the sram not enough for the buffering, make sure you are using Mega version arduino instead of Uno or something else.
 3. rosserial still got problem with sync: replace "ros::nodeHandle" inside the ino file with "ros::nodeHandle_<ArduinoHardware, 6, 6, 150, 150>" to lower the buffer size, or just try use the jade-devel branch instead of indigo-devel
+4. hector_slam consumes too much CPU or got error like "SearchDir angle change too large": rebuild catkin work space using "catkin_make -DCMAKE_BUILD_TYPE=Release", the debug version will use more CPU more than release version, and if you are using a real-life slam, try not move it too fase.
