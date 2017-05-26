@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+  <robot name="pi_roombot">
+    <link name="base_link">
+      <visual>
+         <geometry>
+            <cylinder length="0.087" radius="0.155"/>
+         </geometry>
+         <origin rpy="0 0 0" xyz="0 0 0.05"/>
+         <material name="white">
+           <color rgba="0 0 0 1"/>
+         </material>
+      </visual>
+    </link>
+  </robot>
