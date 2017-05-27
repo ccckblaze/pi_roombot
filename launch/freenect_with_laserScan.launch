@@ -1,5 +1,11 @@
 <launch>
 
+<node pkg="tf" type="static_transform_publisher" name="scanmatcher_to_base_footprint" 
+  args="0.0 0.0 0.0 0.0 0.0 0.0 /scanmatcher_frame /base_footprint 100" /> 
+
+<node pkg="tf" type="static_transform_publisher" name="base_footprint_to_camera_link" 
+  args="0.0 0.0 0.0 0.0 0.0 0.0 /base_footprint /camera_link 100" /> 
+
 <!-- Camera -->
 <include file="$(find freenect_launch)/launch/freenect.launch">
     <arg name="depth_registration" value="True" />
@@ -44,16 +50,7 @@
 <param name="/camera/driver/data_skip" value="20" />
 
   <group ns="rtabmap">
-   
-    <!--node name="rgbd_odometry" pkg="rtabmap_ros" type="rgbd_odometry" output="screen">
-        <param name="frame_id" type="string" value="base_print"/>
-        <remap from="rgb/image"       to="/camera/rgb/image_rect_color"/>
-        <remap from="depth/image"     to="/camera/depth_registered/image_raw"/>
-        <remap from="rgb/camera_info" to="/camera/depth_registered/camera_info"/>
-
-        <param name="wait_for_transform_duration" type="double" value="2"/>
-    </node-->
-
+  
     <node name="rtabmap" pkg="rtabmap_ros" type="rtabmap" output="screen" args="">
         <param name="frame_id" type="string" value="base_footprint"/>
         <param name="subscribe_depth" type="bool" value="true"/>
@@ -68,6 +65,12 @@
 
         <param name="wait_for_transform_duration" type="double" value="2"/>
 
+        <param name="Reg/Strategy"       type="string" value="1"/>    <!-- 0=Visual, 1=ICP, 2=Visual+ICP -->
+        <param name="Vis/MaxDepth"       type="string" value="10.0"/> <!-- 3D visual words maximum depth 0=infinity -->
+        <param name="Vis/InlierDistance" type="string" value="0.1"/>  <!-- 3D visual words correspondence distance -->
+        <param name="Optimizer/Slam2D"   type="string" value="true"/>
+        <param name="Reg/Force3DoF"      type="string" value="true"/>
+
         <param name="OdomF2M/MaxSize" value="1000"/>
         <param name="Odom/ImageDecimation" value="20"/>
         <param name="Mem/ImagePreDecimation" value="20"/>
@@ -76,10 +79,6 @@
         <!-- param name="Vis/FeatureType" value="0"/-->
         <param name="Kp/DetectorStrategy" value="0"/>
     </node>
-
-    <node pkg="tf" type="static_transform_publisher" name="scanmatcher_to_base_footprint" 
-    args="0.0 0.0 0.0 0.0 0.0 0.0 /scanmatcher_frame /base_footprint 100" /> 
-
   </group>
 
 </launch>
