@@ -35,6 +35,7 @@
 #include <ros_arduino_msgs/Encoders.h>
 #include <ros_arduino_msgs/CmdDiffVel.h>
 #include <ros_arduino_msgs/RawImu.h>
+#include <pi_roombot/UpdatePin.h>
 #include <geometry_msgs/Vector3.h>
 
 /********************************************************************************************
@@ -143,9 +144,11 @@ ros::Subscriber<ros_arduino_msgs::CmdDiffVel> sub_diff_vel("cmd_diff_vel", cmdDi
 
 // ROS services prototype
 void updateGainsCb(const ros_arduino_base::UpdateGains::Request &req, ros_arduino_base::UpdateGains::Response &res);
+void updatePin(const pi_roombot::UpdatePin::Request &req, pi_roombot::UpdatePin::Response &res);
 
 // ROS services
 ros::ServiceServer<ros_arduino_base::UpdateGains::Request, ros_arduino_base::UpdateGains::Response> update_gains_server("update_gains", &updateGainsCb);
+ros::ServiceServer<pi_roombot::UpdatePin::Request, pi_roombot::UpdatePin::Response> update_pin_server("update_pin", &updatePinCb);
 
 // ROS publishers msgs
 ros_arduino_msgs::Encoders encoders_msg;
@@ -164,9 +167,10 @@ void setup()
   encoders_msg.header.frame_id = frame_id;
   // Pub/Sub
   nh.advertise(pub_encoders);
+  nh.advertise(raw_imu_pub);
   nh.subscribe(sub_diff_vel);
   nh.advertiseService(update_gains_server);
-  nh.advertise(raw_imu_pub);
+  nh.advertiseService(update_pin_server);
   
   // Wait for ROSserial to connect
   while (!nh.connected()) 
@@ -243,7 +247,6 @@ void setup()
     Wire.begin();
   #endif
 } 
-
 
 void loop() 
 {
@@ -322,7 +325,6 @@ void loop()
   nh.spinOnce();
 }
 
-
 void cmdDiffVelCallback( const ros_arduino_msgs::CmdDiffVel& diff_vel_msg) 
 {
   left_motor_controller.desired_velocity = diff_vel_msg.left;
@@ -361,7 +363,6 @@ void doControl(ControlData * ctrl)
   ctrl->previous_time = ctrl->current_time;
   ctrl->previous_encoder = ctrl->current_encoder;
   ctrl->previous_error = error;
-
 }
 
 void Control()
@@ -374,7 +375,6 @@ void Control()
 
   commandLeftMotor(left_motor_controller.command);
   commandRightMotor(right_motor_controller.command);
-  
 }
 
 void updateGainsCb(const ros_arduino_base::UpdateGains::Request & req, ros_arduino_base::UpdateGains::Response & res)
@@ -389,6 +389,18 @@ void updateGainsCb(const ros_arduino_base::UpdateGains::Request & req, ros_ardui
   Kd = pid_gains[2] * control_rate[0];
 }
 
-
-
-
+void updatePinCb(const pi_roombot::UpdatePin::Request & req, pi_roombot::UpdatePin::Response & res)
+{
+  if(req.mode == OUTPUT) {
+    pinMode(req.pin, req.mode);
+    digitalWrite(req.pin, req.state);
+    res.result = 0;
+  }
+  else if(req.mode == INPUT) {
+    pinMode(req.pin, req.mode);
+    res.result = digitalRead(req.pin, req.state);
+  }
+  else {
+    res.result = -1;
+  }
+}
