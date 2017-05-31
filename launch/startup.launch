@@ -1,0 +1,15 @@
+<launch>
+ 
+<node pkg="tf" type="static_transform_publisher" name="base_footpirint_to_imu_link" 
+  args="0.0 0.0 0.0 0.0 0.0 0.0 /base_footprint /imu_link 100" /> 
+
+<!-- Arduino -->
+<include file="$(find pi_roombot)/launch/arduino.launch">
+</include>
+
+<!-- Raspberry Pi -->
+<include file="$(find pi_roombot)/launch/freenect_with_laserScan.launch">
+</include>
+
+
+</launch>
