@@ -1,5 +1,5 @@
 <launch>
-  <!-- ros_arduino_base -->
+ <!-- ros_arduino_base -->
   <node pkg="rosserial_python" type="serial_node.py" name="arduino_base_controller" output="screen" respawn="true">
     <param name="~port" value="/dev/ttyACM0" />
     <param name="~baud" value="115200" />

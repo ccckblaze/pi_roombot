@@ -5,7 +5,7 @@ This is a ROS based SLAM robot project comes out with a very low price(less than
 ## Components
 1. Raspberry Pi or other ARM or x86 based computer.
 2. Arduino Mega 2560(recommended, used for wheel and IMU controll, you can do it the harder way which recoding to suit just using the Raspberry Pi)
-3. Motor Driver: PololuMC33926 or DFRobotL298PShield(other L298N component should works too) 
+3. Motor Driver: PololuMC33926 or DFRobotL298PShield(other L298N component should works too, but need to transform the controll pins from 6 pin to 4 pin with a NOT gate) 
 4. IMU: Sparkfun SEN-10724/Generic GY-85/Generic GY-80
 5. Lidar: XV-11/rplidar etc.(Optional, could replace this with fake lidar from the depth camera with package "depthimage_to_laserscan, but it is not precisely and reduce performace")
 6. Kinect for XBox 360

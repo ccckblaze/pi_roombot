@@ -6,21 +6,20 @@
 <node pkg="tf" type="static_transform_publisher" name="base_footprint_to_camera_link" 
   args="0.0 0.0 0.0 0.0 0.0 0.0 /base_footprint /camera_link 100" /> 
 
+<node pkg="tf" type="static_transform_publisher" name="base_footprint_to_scan" 
+  args="0.0 0.0 0.0 0.0 0.0 0.0 /base_footprint /scan 100" /> 
+
+
 <!-- Camera -->
 <include file="$(find freenect_launch)/launch/freenect.launch">
     <arg name="depth_registration" value="True" />
 </include>
 
 <!-- Laser -->
-<node name="rplidarNode"          pkg="rplidar_ros"  type="rplidarNode" output="screen">
-    <param name="serial_port"         type="string" value="/dev/ttyUSB0"/>  
-    <param name="serial_baudrate"     type="int"    value="115200"/>
-    <param name="frame_id"            type="string" value="base_footprint"/>
-    <param name="inverted"            type="bool"   value="false"/>
-    <param name="angle_compensate"    type="bool"   value="true"/>
-</node>
+<include file="$(find pi_roombot)/launch/rplidar.launch">
+</include>
 
-<!-- Odometry from laser scans -->
+!-- Odometry from laser scans -->
 <!-- We use Hector mapping to generate odometry for us -->
 <node pkg="hector_mapping" type="hector_mapping" name="hector_mapping" output="screen">
     
