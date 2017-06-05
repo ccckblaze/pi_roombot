@@ -144,7 +144,7 @@ ros::Subscriber<ros_arduino_msgs::CmdDiffVel> sub_diff_vel("cmd_diff_vel", cmdDi
 
 // ROS services prototype
 void updateGainsCb(const ros_arduino_base::UpdateGains::Request &req, ros_arduino_base::UpdateGains::Response &res);
-void updatePin(const pi_roombot::UpdatePin::Request &req, pi_roombot::UpdatePin::Response &res);
+void updatePinCb(const pi_roombot::UpdatePin::Request &req, pi_roombot::UpdatePin::Response &res);
 
 // ROS services
 ros::ServiceServer<ros_arduino_base::UpdateGains::Request, ros_arduino_base::UpdateGains::Response> update_gains_server("update_gains", &updateGainsCb);
@@ -387,6 +387,8 @@ void updateGainsCb(const ros_arduino_base::UpdateGains::Request & req, ros_ardui
   Kp = pid_gains[0];
   Ki = pid_gains[1] / control_rate[0];
   Kd = pid_gains[2] * control_rate[0];
+  
+  nh.loginfo("Gains Updated!");
 }
 
 void updatePinCb(const pi_roombot::UpdatePin::Request & req, pi_roombot::UpdatePin::Response & res)
@@ -398,9 +400,11 @@ void updatePinCb(const pi_roombot::UpdatePin::Request & req, pi_roombot::UpdateP
   }
   else if(req.mode == INPUT) {
     pinMode(req.pin, req.mode);
-    res.result = digitalRead(req.pin, req.state);
+    res.result = digitalRead(req.pin);
   }
   else {
     res.result = -1;
   }
+  
+  nh.loginfo("Pin Updated!");
 }
