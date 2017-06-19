@@ -47,7 +47,8 @@
 
 // Select your motor driver here
 //#define PololuMC33926
-#define DFRobotL298PShield
+//#define DFRobotL298PShield
+#define L298N
 
 // Define your encoder pins here.
 // Try to use pins that have interrupts
@@ -62,14 +63,15 @@
 /                                                 END OF USER CONFIG                        *
 /********************************************************************************************/
 
+#include "motor_driver_config.h"
+
+// Encoder
 #define ENCODER_OPTIMIZE_INTERRUPTS
 #include <Encoder.h>
 
 #if defined(PololuMC33926)
   #include <PololuMC33926.h>
 #endif
-
-#include "motor_driver_config.h"
 
 // IMU
 #if defined(WIRE_T3)

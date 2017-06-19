@@ -9,6 +9,8 @@ void commandRightMotor(int16_t cmd);
   #include "PololuMC33926_config.h"
 #elif defined(DFRobotL298PShield)
   #include "DFRobotL298PShield_config.h"
+#elif defined(L298N)
+  #include "L298N_config.h"
 #endif
 
 #endif  // _MOTOR_DRIVER_CONFIG_H_
