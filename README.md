@@ -3,14 +3,14 @@
 This is a ROS based SLAM robot project comes out with a very low price(less than $300), and it works fine with the Raspberry Pi.
 
 ## Components
-1. Raspberry Pi or other ARM or x86 based computer.
-2. Arduino Mega 2560(recommended, used for wheel and IMU controll, you can do it the harder way which recoding to suit just using the Raspberry Pi)
+1. Raspberry Pi or other ARM or x86 based computer
+2. Arduino Mega 2560(Recommended, used for wheel and IMU controll, you can do it the harder way which recoding to suit just using the Raspberry Pi)
 3. Motor Driver: PololuMC33926, DFRobotL298PShield or L298N component
-4. Robot Chassis with Power Supply and two wheels(both 12V and 5V needed)
+4. Robot Chassis with Power Supply and two wheels(Both 12V and 5V needed)
 5. IMU: Sparkfun SEN-10724/Generic GY-85/Generic GY-80
 6. Lidar: XV-11/rplidar etc.(Optional, could replace this with fake lidar from the depth camera with package "depthimage_to_laserscan, but it is not precisely and reduce performace")
 7. Kinect for RGBD-SLAM(Optional)
-8. Microphone(you can use "kinect-audio-setup" package to use Kinect as Microphone) and Speaker for audio support(Optional)
+8. Microphone and Speaker for audio support(Optional, you can use "kinect-audio-setup" package to use Kinect as microphone)
 
 ## Software Requirement
 1. Ubuntu Mate 16.04.2 LTS(Raspbian shold work too, if someone test under this env plz let me know)
