@@ -11,7 +11,7 @@
 //Right Motor
 #define right_motor_in1 6
 #define right_motor_in2 5
-#define right_motor_pwm 4
+#define right_motor_enable 4
 // Left and Right motor driver objects
 
 void setupMotors()
@@ -45,8 +45,7 @@ void commandRightMotor(int16_t cmd)
     digitalWrite(right_motor_in2, 1);
   }
   analogWrite(right_motor_enable, abs(cmd));
-
-
+}
 
 #endif  // _L298N_CONFIG_H_
 
