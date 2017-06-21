@@ -5,13 +5,13 @@
 
 // Motor Driver Pins
 //Left Motor
-#define left_motor_in1 9
-#define left_motor_in2 8
-#define left_motor_enable 7
+#define left_motor_enable 4
+#define left_motor_in1 5
+#define left_motor_in2 6
 //Right Motor
-#define right_motor_in1 6
-#define right_motor_in2 5
-#define right_motor_enable 4
+#define right_motor_enable 7
+#define right_motor_in1 8
+#define right_motor_in2 9
 // Left and Right motor driver objects
 
 void setupMotors()

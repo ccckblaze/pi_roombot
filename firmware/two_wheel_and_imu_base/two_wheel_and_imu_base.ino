@@ -56,8 +56,8 @@
 #define LEFT_ENCODER_A 14  // Interrupt on Teensy 3.0
 #define LEFT_ENCODER_B 15  // Interrupt on Teensy 3.0
 // Right side encoders pins
-#define RIGHT_ENCODER_A 6  // Interrupt on Teensy 3.0
-#define RIGHT_ENCODER_B 7  // Interrupt on Teensy 3.0
+#define RIGHT_ENCODER_A 16  // Interrupt on Teensy 3.0
+#define RIGHT_ENCODER_B 17  // Interrupt on Teensy 3.0
 
 /********************************************************************************************
 /                                                 END OF USER CONFIG                        *
@@ -66,6 +66,7 @@
 #include "motor_driver_config.h"
 
 // Encoder
+#define ENCODER
 #define ENCODER_OPTIMIZE_INTERRUPTS
 #include <Encoder.h>
 
@@ -255,11 +256,13 @@ void loop()
   // For motors
   if ((millis() - last_encoders_time) >= (1000 / encoder_rate[0]))
   { 
-    encoders_msg.left = left_encoder.read();
-    encoders_msg.right = right_encoder.read();
-    encoders_msg.header.stamp = nh.now();
-    pub_encoders.publish(&encoders_msg);
-    last_encoders_time = millis();
+    #ifdef ENCODER
+      encoders_msg.left = left_encoder.read();
+      encoders_msg.right = right_encoder.read();
+      encoders_msg.header.stamp = nh.now();
+      pub_encoders.publish(&encoders_msg);
+      last_encoders_time = millis();
+    #endif
   }
   if ((millis()) - last_control_time >= (1000 / control_rate[0]))
   {
@@ -342,11 +345,20 @@ void updateControl(ControlData * ctrl, int32_t encoder_reading)
 
 void doControl(ControlData * ctrl)
 {
-  float estimated_velocity = meters_per_counts * (ctrl->current_encoder - ctrl->previous_encoder) * 1000.0 / (ctrl->current_time - ctrl->previous_time);
-  float error = ctrl->desired_velocity - estimated_velocity;
-  float cmd = Kp * error + Ki * (error + ctrl->total_error) + Kd * (error - ctrl->previous_error);
+  float cmd = 0.0;
+  float error = 0.0;
+  #ifdef ENCODER
+    float estimated_velocity = meters_per_counts * (ctrl->current_encoder - ctrl->previous_encoder) * 1000.0 / (ctrl->current_time - ctrl->previous_time);
+    error = ctrl->desired_velocity - estimated_velocity;
+    cmd = Kp * error + Ki * (error + ctrl->total_error) + Kd * (error - ctrl->previous_error);
+  
+    //nh.loginfo(String(String((int)estimated_velocity) + " " + String((int)error) + " " + String((int)cmd) + " " + String((int)ctrl->command)).c_str());
 
-  cmd += ctrl->command;
+    cmd += ctrl->command;
+  #else
+    // magic
+    cmd = ctrl->desired_velocity * 50;
+  #endif
 
   if(cmd >= pwm_range[0])
   {
@@ -374,7 +386,9 @@ void Control()
 
   doControl(&left_motor_controller);
   doControl(&right_motor_controller);
-
+  
+  //nh.loginfo(String(String(left_motor_controller.command) + " " + String(right_motor_controller.command)).c_str());
+  
   commandLeftMotor(left_motor_controller.command);
   commandRightMotor(right_motor_controller.command);
 }
