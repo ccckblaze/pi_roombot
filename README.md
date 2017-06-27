@@ -1,9 +1,9 @@
 # pi_roombot(Under Developing)  
 ------
-This is a ROS based SLAM robot project comes out with a very low price(less than $300), and it works perfect along with the Raspberry Pi.  
+This is a ROS based SLAM robot project comes out with a very low price(less than $300), and it works perfect along with the Raspberry Pi and also Jetson.  
 
 ## Components  
-1. Raspberry Pi or other ARM or x86 based computer  
+1. Raspberry Pi or other ARM or x86 based develop board or PC  
 2. Arduino Mega 2560(Recommended, used for wheel and IMU controll, you can do it the harder way which recoding it to suit just using the Raspberry Pi's GPIO)  
 3. Motor Driver: PololuMC33926, DFRobotL298PShield or L298N component  
 4. Robot Chassis with Power Supply and two wheels(Both 12V and 5V needed)  
