@@ -14,8 +14,8 @@ This is a ROS based SLAM robot project comes out with a very low price(less than
 
 ## Software Requirement
 1. Ubuntu Mate 16.04.2 LTS(Raspbian shold work too, if someone test under this env plz let me know)  
-2. ROS Indigo(For PI or Jetson, this may need to compile from the source code)  
-3. ROS Packages: navigation, rosserial, ros_arduino, imu_tools, freenect_stack(or openni_camera, openni_launch), rtabmap, rtabmap_ros, audio_common(optional), pocketsphinx(optional)
+2. ROS Kinetic  
+3. ROS Packages: navigation, rosserial, ros_arduino, imu_tools, freenect_stack(or openni_camera, openni_launch), rtabmap, rtabmap_ros, audio_common(optional), pocketsphinx(optional)  
 
 ## Installation
 1. Install ROS From Tutoral, For Pi: http://wiki.ros.org/indigo/Installation/UbuntuARM, if this not working try build from source following: http://wiki.ros.org/indigo/Installation/Source  
