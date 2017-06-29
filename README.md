@@ -13,7 +13,7 @@ This is a ROS based SLAM robot project comes out with a very low price(less than
 8. Microphone and Speaker for audio support(Optional, you can use "kinect-audio-setup" package to use Kinect as microphone)  
 
 ## Software Requirement
-1. Ubuntu Mate 16.04.2 LTS(Raspbian shold work too, if someone test under this env plz let me know)  
+1. Ubuntu Mate 16.04.2 LTS(Raspbian should works too, if someone test under this env plz let me know)  
 2. ROS Kinetic  
 3. ROS Packages: navigation, rosserial, ros_arduino, imu_tools, freenect_stack(or openni_camera, openni_launch), rtabmap, rtabmap_ros, audio_common(optional), pocketsphinx(optional)  
 
