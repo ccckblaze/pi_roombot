@@ -86,9 +86,9 @@ class Wheel(object):
         self.pwm_ch.start(0)
 
     def __del__(self):
-        print('Wheel destroryed')
+        print('Wheel destroyed')
 
-    def destory(self):
+    def destroy(self):
         self.destroyed = True
         self.pwm_ch.stop()
                 
@@ -145,7 +145,7 @@ class Servo(object):
         self.servoLoopThread.start()
         
     def __del__(self):
-        print('Servo destroryed')
+        print('Servo destroyed')
        
     def destroy(self):
         self.destroyed = True
@@ -225,10 +225,10 @@ class Viehcle(object):
     def __del__(self):
         print('Car destroyed')
         if self.is4WD:
-            self.wheel_front_left.destory()
-            self.wheel_front_right.destory()
-        self.wheel_back_left.destory()
-        self.wheel_back_right.destory()
+            self.wheel_front_left.destroy()
+            self.wheel_front_right.destroy()
+        self.wheel_back_left.destroy()
+        self.wheel_back_right.destroy()
         self.camera_servo.destroy()
 
     def destroy(self):
